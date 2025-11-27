@@ -1,0 +1,186 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.19.0
+  name: workloadschedules.infra.illumin.com
+spec:
+  group: infra.illumin.com
+  names:
+    kind: WorkloadSchedule
+    listKind: WorkloadScheduleList
+    plural: workloadschedules
+    singular: workloadschedule
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .spec.timezone
+      name: Timezone
+      type: string
+    - jsonPath: .status.withinActiveWindow
+      name: Active
+      type: boolean
+    - jsonPath: .status.currentReplicas
+      name: Replicas
+      type: integer
+    - jsonPath: .status.lastSyncTime
+      name: Last Sync
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: WorkloadSchedule is the Schema for the workloadschedules API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: WorkloadScheduleSpec defines the desired state of WorkloadSchedule
+            properties:
+              endHour:
+                description: EndHour is the hour (0-23) when the active window ends
+                  (exclusive)
+                maximum: 24
+                minimum: 0
+                type: integer
+              replicasWhenActive:
+                description: ReplicasWhenActive is the number of replicas when within
+                  the active window
+                format: int32
+                minimum: 1
+                type: integer
+              startHour:
+                description: StartHour is the hour (0-23) when the active window begins
+                  (inclusive)
+                maximum: 23
+                minimum: 0
+                type: integer
+              targetDeployment:
+                description: TargetDeployment is the name of the deployment to scale
+                minLength: 1
+                type: string
+              targetNamespace:
+                description: TargetNamespace is the namespace where the target deployment
+                  resides
+                minLength: 1
+                type: string
+              timezone:
+                description: |-
+                  Timezone specifies the timezone to use for scheduling (e.g., "America/Toronto")
+                  This timezone will be used to query the worldtimeapi.org API
+                minLength: 1
+                type: string
+            required:
+            - endHour
+            - replicasWhenActive
+            - startHour
+            - targetDeployment
+            - targetNamespace
+            - timezone
+            type: object
+          status:
+            description: WorkloadScheduleStatus defines the observed state of WorkloadSchedule
+            properties:
+              conditions:
+                description: Conditions represent the current state of the WorkloadSchedule
+                  resource
+                items:
+                  description: Condition contains details for one aspect of the current
+                    state of this API Resource.
+                  properties:
+                    lastTransitionTime:
+                      description: |-
+                        lastTransitionTime is the last time the condition transitioned from one status to another.
+                        This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+                      format: date-time
+                      type: string
+                    message:
+                      description: |-
+                        message is a human readable message indicating details about the transition.
+                        This may be an empty string.
+                      maxLength: 32768
+                      type: string
+                    observedGeneration:
+                      description: |-
+                        observedGeneration represents the .metadata.generation that the condition was set based upon.
+                        For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                        with respect to the current state of the instance.
+                      format: int64
+                      minimum: 0
+                      type: integer
+                    reason:
+                      description: |-
+                        reason contains a programmatic identifier indicating the reason for the condition's last transition.
+                        Producers of specific condition types may define expected values and meanings for this field,
+                        and whether the values are considered a guaranteed API.
+                        The value should be a CamelCase string.
+                        This field may not be empty.
+                      maxLength: 1024
+                      minLength: 1
+                      pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
+                      type: string
+                    status:
+                      description: status of the condition, one of True, False, Unknown.
+                      enum:
+                      - "True"
+                      - "False"
+                      - Unknown
+                      type: string
+                    type:
+                      description: type of condition in CamelCase or in foo.example.com/CamelCase.
+                      maxLength: 316
+                      pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - message
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+                x-kubernetes-list-map-keys:
+                - type
+                x-kubernetes-list-type: map
+              currentLocalTime:
+                description: CurrentLocalTime is the current local time in the specified
+                  timezone
+                type: string
+              currentReplicas:
+                description: CurrentReplicas is the current number of replicas of
+                  the target deployment
+                format: int32
+                type: integer
+              lastScaleAction:
+                description: LastScaleAction describes the last scaling action taken
+                type: string
+              lastSyncTime:
+                description: LastSyncTime is the timestamp of the last successful
+                  reconciliation
+                format: date-time
+                type: string
+              withinActiveWindow:
+                description: WithinActiveWindow indicates whether the current time
+                  is within the active window
+                type: boolean
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

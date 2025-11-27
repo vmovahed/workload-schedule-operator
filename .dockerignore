@@ -1,0 +1,39 @@
+# Ignore build artifacts
+bin/
+dist/
+cover.out
+
+# Ignore IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Ignore git
+.git/
+.gitignore
+
+# Ignore CI/CD
+.github/
+
+# Ignore development files
+.devcontainer/
+.golangci.yml
+
+# Ignore test files
+*_test.go
+test/
+
+# Ignore scripts (not needed in container)
+scripts/
+
+# Ignore documentation
+*.md
+!README.md
+
+# Ignore kubernetes configs (applied separately)
+config/samples/
+
+# Ignore certificates
+certs/

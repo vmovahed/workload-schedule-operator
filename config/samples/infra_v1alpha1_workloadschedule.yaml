@@ -1,0 +1,14 @@
+apiVersion: infra.illumin.com/v1alpha1
+kind: WorkloadSchedule
+metadata:
+  labels:
+    app.kubernetes.io/name: workload-schedule-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: example
+spec:
+  timezone: "America/Toronto"
+  startHour: 9
+  endHour: 17
+  targetNamespace: "demo"
+  targetDeployment: "demo-deployment"
+  replicasWhenActive: 2

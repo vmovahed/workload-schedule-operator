@@ -1,0 +1,51 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: manager-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - infra.illumin.com
+  resources:
+  - workloadschedules
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - infra.illumin.com
+  resources:
+  - workloadschedules/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - infra.illumin.com
+  resources:
+  - workloadschedules/status
+  verbs:
+  - get
+  - patch
+  - update
