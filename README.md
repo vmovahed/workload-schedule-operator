@@ -14,48 +14,48 @@ This operator implements a Custom Resource Definition (CRD) called `WorkloadSche
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
+┌───────────────────────────────────────────────────────────────────────-──────┐
 │                           Kubernetes Cluster                                 │
 │                                                                              │
-│  ┌────────────────────────────────────────────────────────────────────────┐ │
-│  │                    workload-schedule-operator-system                   │ │
-│  │                                                                        │ │
-│  │   ┌──────────────────────────────────────────────────────────────┐    │ │
-│  │   │              Controller Manager Pod                          │    │ │
-│  │   │  ┌─────────────────────┐    ┌─────────────────────────────┐ │    │ │
-│  │   │  │    Controller       │    │    Mutating Webhook         │ │    │ │
-│  │   │  │  (Reconciler)       │    │   (Pod Interceptor)         │ │    │ │
-│  │   │  │                     │    │                             │ │    │ │
-│  │   │  │  • Watch CRs        │    │  • Intercept Pod CREATE     │ │    │ │
-│  │   │  │  • Fetch time API   │    │  • Inject labels            │ │    │ │
-│  │   │  │  • Scale deploys    │    │  • Inject env vars          │ │    │ │
-│  │   │  └─────────────────────┘    └─────────────────────────────┘ │    │ │
-│  │   └──────────────────────────────────────────────────────────────┘    │ │
-│  └────────────────────────────────────────────────────────────────────────┘ │
+│  ┌────────────────────────────────────────────────────────────────────────┐  │
+│  │                    workload-schedule-operator-system                   │  │
+│  │                                                                        │  │
+│  │   ┌──────────────────────────────────────────────────────────────┐     │  │
+│  │   │              Controller Manager Pod                          │     │  │
+│  │   │  ┌─────────────────────┐    ┌─────────────────────────────┐  │     │  │
+│  │   │  │    Controller       │    │    Mutating Webhook         │  │     │  │
+│  │   │  │  (Reconciler)       │    │   (Pod Interceptor)         │  │     │  │
+│  │   │  │                     │    │                             │  │     │  │
+│  │   │  │  • Watch CRs        │    │  • Intercept Pod CREATE     │  │     │  │
+│  │   │  │  • Fetch time API   │    │  • Inject labels            │  │     │  │
+│  │   │  │  • Scale deploys    │    │  • Inject env vars          │  │     │  │
+│  │   │  └─────────────────────┘    └─────────────────────────────┘  │     │  │
+│  │   └──────────────────────────────────────────────────────────────┘     │  │
+│  └────────────────────────────────────────────────────────────────────────┘  │
 │                                    │                                         │
 │                                    │ watches                                 │
 │                                    ▼                                         │
-│  ┌─────────────────────────────────────────────────────────────────────────┐│
-│  │                         WorkloadSchedule CR                             ││
-│  │  spec:                                                                  ││
-│  │    timezone: "America/Toronto"                                          ││
-│  │    startHour: 9                                                         ││
-│  │    endHour: 17                                                          ││
-│  │    targetNamespace: "demo"                                              ││
-│  │    targetDeployment: "my-app"                                           ││
-│  │    replicasWhenActive: 3                                                ││
-│  └─────────────────────────────────────────────────────────────────────────┘│
+│  ┌─────────────────────────────────────────────────────────────────────────┐ │
+│  │                         WorkloadSchedule CR                             │ │
+│  │  spec:                                                                  │ │
+│  │    timezone: "America/Toronto"                                          │ │
+│  │    startHour: 9                                                         │ │
+│  │    endHour: 17                                                          │ │
+│  │    targetNamespace: "demo"                                              │ │
+│  │    targetDeployment: "my-app"                                           │ │
+│  │    replicasWhenActive: 3                                                │ │
+│  └─────────────────────────────────────────────────────────────────────────┘ │
 │                                    │                                         │
 │                                    │ scales                                  │
 │                                    ▼                                         │
-│  ┌─────────────────────────────────────────────────────────────────────────┐│
-│  │                          Target Namespace (demo)                        ││
-│  │   ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐        ││
-│  │   │   Pod (nginx)   │  │   Pod (nginx)   │  │   Pod (nginx)   │        ││
-│  │   │  replica 1/3    │  │  replica 2/3    │  │  replica 3/3    │        ││
-│  │   └─────────────────┘  └─────────────────┘  └─────────────────┘        ││
-│  └─────────────────────────────────────────────────────────────────────────┘│
-└─────────────────────────────────────────────────────────────────────────────┘
+│  ┌─────────────────────────────────────────────────────────────────────────┐ │
+│  │                          Target Namespace (demo)                        │ │
+│  │   ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐         │ │
+│  │   │   Pod (nginx)   │  │   Pod (nginx)   │  │   Pod (nginx)   │         │ │
+│  │   │  replica 1/3    │  │  replica 2/3    │  │  replica 3/3    │         │ │
+│  │   └─────────────────┘  └─────────────────┘  └─────────────────┘         │ │
+│  └─────────────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────────-┘
                                      │
                                      │ queries
                                      ▼
@@ -65,8 +65,8 @@ This operator implements a Custom Resource Definition (CRD) called `WorkloadSche
                     │              Toronto            │
                     │                                 │
                     │  Response:                      │
-                    │  { "datetime": "2025-...",     │
-                    │    "timezone": "America/..." } │
+                    │  { "datetime": "2025-...",      │
+                    │    "timezone": "America/..." }  │
                     └─────────────────────────────────┘
 ```
 
@@ -96,13 +96,13 @@ flowchart TD
                     ◄─────────────────────────────────►
      
  Replicas
-    3 │                    ┌─────────────────┐
-      │                    │                 │
-    2 │                    │   ACTIVE        │
-      │                    │   (3 replicas)  │
-    1 │                    │                 │
-      │                    │                 │
-    0 │────────────────────┘                 └────────────────────
+    3 │                   ┌─────────────┐
+      │                   │             │
+    2 │                   │ ACTIVE      │
+      │                   │(3 replicas) │
+    1 │                   │             │
+      │                   │             │
+    0 │───────────────────┘             └────────────────────
       └────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────►
           12AM  3AM  6AM  9AM 12PM  3PM  6PM  9PM 12AM  3AM  6AM
                           ▲                   ▲
@@ -133,7 +133,7 @@ sequenceDiagram
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
-│                        User Actions                                   │
+│                        User Actions                                  │
 └──────────────────────────────────────────────────────────────────────┘
          │                           │                        │
          │ kubectl apply             │ kubectl run            │ kubectl get
@@ -153,15 +153,15 @@ sequenceDiagram
          │                                                    │
          │ scale                                              │
          ▼                                                    │
-┌─────────────────┐                                          │
-│   Deployment    │                                          │
-│   Scaled        │                                          │
-└────────┬────────┘                                          │
+┌─────────────────┐                                           │
+│   Deployment    │                                           │
+│   Scaled        │                                           │
+└────────┬────────┘                                           │
          │                                                    │
          │ status update                                      │
          ▼                                                    │
-┌─────────────────┐                                          │
-│ WorkloadSchedule│◄─────────────────────────────────────────┘
+┌─────────────────┐                                           │
+│ WorkloadSchedule│◄──────────────────────────────────────-───┘
 │    Status       │
 │                 │
 │ currentTime:    │
@@ -296,9 +296,9 @@ spec:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                     RECONCILIATION LOOP                          │
-│                                                                  │
-│  1. USER CREATES WorkloadSchedule                                │
+│                     RECONCILIATION LOOP                         │
+│                                                                 │
+│  1. USER CREATES WorkloadSchedule                               │
 │     ┌─────────────────────────────────────────────────────────┐ │
 │     │ spec:                                                   │ │
 │     │   timezone: "America/Toronto"                           │ │
@@ -307,20 +307,20 @@ spec:
 │     │   targetDeployment: "my-app"                            │ │
 │     │   replicasWhenActive: 3    ◄── DESIRED STATE            │ │
 │     └─────────────────────────────────────────────────────────┘ │
-│                           │                                      │
-│                           ▼                                      │
-│  2. CONTROLLER CHECKS:                                           │
+│                           │                                     │
+│                           ▼                                     │
+│  2. CONTROLLER CHECKS:                                          │
 │     - What time is it in Toronto? → 10:00 AM (within 9-17)      │
 │     - How many replicas does "my-app" have? → 0                 │
-│                           │                                      │
-│                           ▼                                      │
-│  3. CONTROLLER RECONCILES:                                       │
+│                           │                                     │
+│                           ▼                                     │
+│  3. CONTROLLER RECONCILES:                                      │
 │     - Desired: 3 replicas (it's business hours)                 │
 │     - Actual: 0 replicas                                        │
 │     - Action: SCALE UP to 3! ◄── MAKE ACTUAL = DESIRED          │
-│                           │                                      │
-│                           ▼                                      │
-│  4. REPEAT every 60 seconds...                                   │
+│                           │                                     │
+│                           ▼                                     │
+│  4. REPEAT every 60 seconds...                                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -347,39 +347,39 @@ This allows applications to be aware of their schedule status.
 
 ### Development
 
-| Target | Description |
-|--------|-------------|
-| `make build` | Build the operator binary |
-| `make docker-build` | Build the container image |
-| `make run` | Run the operator locally (outside cluster) |
-| `make manifests` | Generate CRD and RBAC manifests |
-| `make generate` | Generate DeepCopy methods |
-| `make fmt` | Format Go code |
-| `make vet` | Run Go vet |
+| Target              |              Description                   |
+|---------------------|--------------------------------------------|
+| `make build`        | Build the operator binary                  |
+| `make docker-build` | Build the container image                  |
+| `make run`          | Run the operator locally (outside cluster) |
+| `make manifests`    | Generate CRD and RBAC manifests            |
+| `make generate`     | Generate DeepCopy methods                  |
+| `make fmt`          | Format Go code                             |
+| `make vet`          | Run Go vet                                 |
 
 ### Deployment
 
-| Target | Description |
-|--------|-------------|
-| `make deploy` | Deploy operator to cluster |
-| `make undeploy` | Remove operator from cluster |
-| `make install` | Install CRDs only |
-| `make uninstall` | Uninstall CRDs |
+| Target            |        Description           |
+|-------------------|------------------------------|
+| `make deploy`     | Deploy operator to cluster   |
+| `make undeploy`   | Remove operator from cluster |
+| `make install`    | Install CRDs only            |
+| `make uninstall`  | Uninstall CRDs               |
 
 ### Testing
 
-| Target | Description |
-|--------|-------------|
-| `make test` | Run unit tests |
+| Target          |      Description     |
+|-----------------|----------------------|
+| `make test`     | Run unit tests       |
 | `make test-e2e` | Run end-to-end tests |
-| `make lint` | Run golangci-lint |
+| `make lint`     | Run golangci-lint    |
 
 ### CI/CD
 
-| Target | Description |
-|--------|-------------|
-| `make ci` | Run full CI pipeline |
-| `make ci-cleanup` | Clean up after CI |
+| Target            | Description          |
+|-------------------|----------------------|
+| `make ci`         | Run full CI pipeline |
+| `make ci-cleanup` | Clean up after CI    |
 
 ## Project Structure
 
