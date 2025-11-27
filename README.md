@@ -81,7 +81,7 @@ flowchart TD
     E --> F[Requeue after 60s]
     D -->|Yes| G[Parse current hour]
     G --> H{Within active window?<br/>startHour <= hour < endHour}
-    H -->|Yes| I[Set replicas = replicasWhenActive]
+    H -->|Yes| I[Set replicas = 3<br/>replicasWhenActive]
     H -->|No| J[Set replicas = 0]
     I --> K[Update target Deployment]
     J --> K
